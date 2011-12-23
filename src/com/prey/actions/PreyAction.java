@@ -32,6 +32,7 @@ public abstract class PreyAction {
 			actions.put(Mp3PlayerAction.DATA_ID, new Mp3PlayerAction());
 			actions.put(PopUpAlertAction.DATA_ID, new PopUpAlertAction());
 			actions.put(LockAction.DATA_ID, new LockAction());
+			actions.put(WipeAction.DATA_ID, new WipeAction());
 			// Register here new available actions
 			preyActions = actions;
 		}

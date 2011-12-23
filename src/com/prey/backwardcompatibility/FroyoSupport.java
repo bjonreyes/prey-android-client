@@ -68,5 +68,11 @@ public class FroyoSupport {
 		//intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, getText(R.string.device_admin_prompt));
 		return intent;
 	}
+
+
+	public void wipe() {
+		if (isAdminActive())
+	    	policyManager.wipeData(0);
+	}
 	
 }
