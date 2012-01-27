@@ -6,10 +6,13 @@
  ******************************************************************************/
 package com.prey.backwardcompatibility;
 
+import java.io.IOException;
+
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.RecoverySystem;
 
 import com.prey.PreyConfig;
 import com.prey.PreyLogger;
@@ -72,7 +75,14 @@ public class FroyoSupport {
 
 	public void wipe() {
 		if (isAdminActive())
-	    	policyManager.wipeData(0);
+			policyManager.wipeData(0);
+		/*
+			try {
+				RecoverySystem.rebootWipeUserData(ctx);
+			} catch (IOException e) {
+				PreyLogger.e("Error wiping device", e);
+			}
+		*/
 	}
 	
 }
