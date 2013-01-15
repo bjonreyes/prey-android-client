@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -44,9 +44,13 @@ public class FileConfigReader {
 	public String getAgreementId(){
 		return properties.getProperty("agreement-id");
 	}
-	public String getc2dmMail(){
-		return properties.getProperty("c2dm-mail");
+	public String getGcmId(){
+		return properties.getProperty("gcm-id");
 	}
+	public String getGcmIdPrefix(){
+		return properties.getProperty("gcm-id-prefix");
+	}
+	
 	public String getc2dmAction(){
 		return properties.getProperty("c2dm-action");
 	}
@@ -57,12 +61,15 @@ public class FileConfigReader {
 	public String getPreyDomain(){
 		return properties.getProperty("prey-domain");
 	}
+	
 	public String getPreySubdomain(){
 		return properties.getProperty("prey-subdomain");
 	}
-	public String getPreyVersion(){
-		return properties.getProperty("prey-version");
+	
+	public String getPreyUiSubdomain(){
+		return properties.getProperty("prey-ui-subdomain");
 	}
+
 	public String getPreyMinorVersion(){
 		return properties.getProperty("prey-minor-version");
 	}
@@ -72,6 +79,10 @@ public class FileConfigReader {
 	}
 	public boolean isLogEnabled() {
 		return Boolean.parseBoolean(properties.getProperty("log-enabled"));
+	}
+
+	public String getAnalyticsUA() {
+		return properties.getProperty("analytics-ua");
 	}
 	
 }

@@ -1,12 +1,19 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
 package com.prey.actions;
 
+ 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import com.prey.net.http.EntityFile;
+
+ 
 
 public class HttpDataService {
 
@@ -16,10 +23,13 @@ public class HttpDataService {
 	private boolean isList;
 	private String httpMethod;
 	private String url;
+	private List<EntityFile> entityFiles;
+ 
 
 	public HttpDataService(String key) {
 		this.key = key;
 		dataList = new HashMap<String, String>();
+		entityFiles= new ArrayList<EntityFile>();
 	}
 
 	public HashMap<String, String> getDataAsParameters() {
@@ -108,5 +118,22 @@ public class HttpDataService {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
+
+	public void addEntityFile(EntityFile entityFile) {
+		entityFiles.add(entityFile);
+	}
+
+	public List<EntityFile> getEntityFiles() {
+		return entityFiles;
+	}
+
+	public void setEntityFiles(List<EntityFile> entityFiles) {
+		this.entityFiles = entityFiles;
+	}
+
+
+ 
+ 
 
 }

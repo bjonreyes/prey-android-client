@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -9,9 +9,7 @@ package com.prey.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
-import com.prey.PreyConfig;
 import com.prey.PreyLogger;
 import com.prey.services.PreyBootService;
 

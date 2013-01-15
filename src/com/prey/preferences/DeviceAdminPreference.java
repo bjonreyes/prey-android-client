@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -14,9 +14,8 @@ import android.preference.DialogPreference;
 import android.util.AttributeSet;
 
 import com.prey.PreyConfig;
-import com.prey.R;
 import com.prey.backwardcompatibility.FroyoSupport;
-
+import com.prey.R;
 public class DeviceAdminPreference extends DialogPreference {
 	
 	Context ctx = null;

@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -17,10 +17,10 @@ import android.telephony.TelephonyManager;
 import com.prey.PreyConfig;
 import com.prey.PreyController;
 import com.prey.PreyLogger;
-import com.prey.R;
 import com.prey.backwardcompatibility.CupcakeSupport;
+import com.prey.exceptions.SMSNotSendException;
 import com.prey.sms.SMSSupport;
-
+import com.prey.R;
 public class PreyBootService extends Service {
 
 	// This is the object that receives interactions from clients
@@ -71,14 +71,18 @@ public class PreyBootService extends Service {
 								PreyLogger.d("SIM is ready to be checked now. Checking...");
 								if (preyConfig.isSimChanged()) {
 									PreyLogger.d("Starting prey right now since SIM was replaced!");
-									String destSMS = preyConfig.getDestinationSms();
+									String destSMS = preyConfig.getDestinationSmsNumber();
 									if (PhoneNumberUtils.isWellFormedSmsAddress(destSMS)) {
 										String mail = PreyConfig.getPreyConfig(PreyBootService.this).getEmail();
 										String message = getString(R.string.sms_to_send_text, mail);
 										if (PreyConfig.getPreyConfig(PreyBootService.this).isCupcake())
 											CupcakeSupport.sendSMS(destSMS,message);
 										else
-											SMSSupport.sendSMS(destSMS,message);
+											try {
+												SMSSupport.sendSMS(destSMS,message);
+											} catch (SMSNotSendException e) {
+												PreyLogger.i("There was an error sending the SIM replaced SMS alert");
+											}
 										
 									}
 									PreyController.startPrey(getApplicationContext());

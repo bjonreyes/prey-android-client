@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -8,18 +8,16 @@ package com.prey.actions;
 
 import java.util.ArrayList;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+
 import android.content.Context;
 import android.content.Intent;
+
+
 import com.prey.PreyConfig;
-import com.prey.PreyException;
 import com.prey.PreyLogger;
-import com.prey.R;
 import com.prey.actions.observer.ActionsController;
 import com.prey.actions.parser.ResponseParser;
-import com.prey.activities.WelcomeActivity;
+import com.prey.exceptions.PreyException;
 import com.prey.net.PreyWebServices;
 import com.prey.services.LocationService;
 import com.prey.services.PreyRunnerService;
@@ -47,9 +45,11 @@ public class ActionsRunnner {
 
 		public ActionsRunner(Context context) {
 			this.ctx = context;
+			
 		}
 
 		public void run() {
+			
 			preyConfig = PreyConfig.getPreyConfig(ctx);
 			if (preyConfig.isThisDeviceAlreadyRegisteredWithPrey(true)){
 				PreyExecutionWaitNotify waitNotify = new PreyExecutionWaitNotify();
@@ -68,15 +68,20 @@ public class ActionsRunnner {
 					}
 				} 
 				else {
-					preyConfig.setMissing(true);
-					PreyWebServices.getInstance().setMissing(ctx, true);
-					while (preyConfig.isMissing()) {
+					boolean isMissing = true;
+					preyConfig.setMissing(isMissing);
+					PreyWebServices.getInstance().setMissing(ctx, isMissing);
+					while (isMissing) {
 						try {
-							boolean isMissing = getInstructionsAndRun(waitNotify, false);
-							PreyLogger.d( "Now waiting [" + preyControlStatus.getDelay() + "] minutes before next execution");
-							if (isMissing)
+							isMissing = getInstructionsAndRun(waitNotify, false);
+							preyConfig.setMissing(isMissing);
+							if (isMissing){
+								PreyRunnerService.interval = preyControlStatus.getDelay();
+								PreyRunnerService.pausedAt = System.currentTimeMillis();
+								PreyLogger.d( "Now waiting [" + preyControlStatus.getDelay() + "] minutes before next execution");
 								Thread.sleep(preyControlStatus.getDelay() * PreyConfig.DELAY_MULTIPLIER);
-		
+							} else
+								PreyLogger.d( "!! Device not marked as missing anymore. Stopping interval execution.");
 						} catch (InterruptedException e) {
 							Thread.currentThread().interrupt();
 						} catch (PreyException e) {
@@ -94,7 +99,6 @@ public class ActionsRunnner {
 				//PreyConfig.getPreyConfig(ctx).setShowLockScreen(false);
 				PreyLogger.d("Prey execution has finished!!");
 			}
-		
 		}
 		
 		private boolean getInstructionsAndRun(PreyExecutionWaitNotify waitNotify, boolean runIfNotMissing) throws PreyException{

@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -10,10 +10,9 @@ import java.util.Random;
 
 import android.content.Context;
 
-import com.prey.PreyConfig;
-import com.prey.PreyException;
 import com.prey.PreyLogger;
 import com.prey.actions.PreyAction;
+import com.prey.exceptions.PreyException;
 
 /**
  * Class that represent the abstraction of a PreyAction execution. This class

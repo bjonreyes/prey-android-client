@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -13,13 +13,24 @@ import java.util.Map;
 
 import android.content.Context;
 
-import com.prey.PreyException;
+import com.prey.actions.camera.CameraAction;
 import com.prey.actions.location.LocationNotifierAction;
 import com.prey.actions.observer.ActionJob;
+import com.prey.exceptions.PreyException;
 
 public abstract class PreyAction {
 	
 	public final String ID = "";
+	
+	
+	public final int RINGTONE_PRIORITY=-1;	
+	public final int CALLLOG_PRIORITY=-1;
+	public final int GEO_PRIORITY=1;
+	public final int ALARM_PRIORITY=2;
+	public final int WEBCAM_PRIORITY=3;
+	public final int LOCK_PRIORITY=5;
+	public final int POPUPALERT_PRIORITY=4;
+	
 	private static HashMap<String, PreyAction> preyActions = null;
 	protected HashMap<String, String> config = new HashMap<String, String>();
 
@@ -32,6 +43,7 @@ public abstract class PreyAction {
 			actions.put(Mp3PlayerAction.DATA_ID, new Mp3PlayerAction());
 			actions.put(PopUpAlertAction.DATA_ID, new PopUpAlertAction());
 			actions.put(LockAction.DATA_ID, new LockAction());
+			actions.put(CameraAction.DATA_ID, new CameraAction());
 			actions.put(WipeAction.DATA_ID, new WipeAction());
 			// Register here new available actions
 			preyActions = actions;
@@ -86,5 +98,7 @@ public abstract class PreyAction {
 		
 		
 	}
+	
+	public abstract int getPriority();
 
 }

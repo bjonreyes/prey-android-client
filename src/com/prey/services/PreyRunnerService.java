@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -30,6 +30,10 @@ import com.prey.net.PreyWebServices;
 public class PreyRunnerService extends Service {
 
 	private final IBinder mBinder = new LocalBinder();
+	public static boolean running = false;
+	public static long startedAt = 0;
+	public static long interval = 0;
+	public static long pausedAt = 0;
 
 	/**
 	 * Class for clients to access. Because we know this service always runs in
@@ -45,6 +49,8 @@ public class PreyRunnerService extends Service {
 	public void onCreate() {
 		PreyLogger.d("PreyRunnerService has been started...");
 		ActionsRunnner exec = new ActionsRunnner();
+		running = true;
+		startedAt = System.currentTimeMillis();
 		exec.run(PreyRunnerService.this);
 	}
 
@@ -53,12 +59,18 @@ public class PreyRunnerService extends Service {
 		PreyLogger.d("PreyRunnerService is going to be destroyed");
 		PreyConfig preyConfig = PreyConfig.getPreyConfig(PreyRunnerService.this);
 		//Setting back to not missing.
-		PreyWebServices.getInstance().setMissing(PreyRunnerService.this, false);
+		new Thread(new Runnable() {
+			public void run() {
+				PreyWebServices.getInstance().setMissing(PreyRunnerService.this, false);
+			}
+		}).start();
+		
 		preyConfig.setMissing(false);
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		nm.cancelAll();
 		ActionsController.getInstance(PreyRunnerService.this).finishRunningJosb();
 		stopService(new Intent(PreyRunnerService.this, LocationService.class));
+		running = false;
 		PreyLogger.d("PreyRunnerService has been destroyed");
 	}
 

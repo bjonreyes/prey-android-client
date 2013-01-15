@@ -1,11 +1,16 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
 package com.prey;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import android.app.Notification;
@@ -14,7 +19,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 
@@ -22,6 +30,7 @@ import com.prey.actions.LockAction;
 import com.prey.actions.PreyAction;
 import com.prey.activities.WelcomeActivity;
 import com.prey.net.PreyWebServices;
+
 
 public class PreyConfig {
 	
@@ -39,6 +48,11 @@ public class PreyConfig {
 	
 	// max "age" in ms of last location (default 120000).
 	public static final float LAST_LOCATION_MAX_AGE = 120000;
+	
+	//Amount of millisecond the app can be suspended before ask for the password. 
+	public static final long PASSWORD_PROMPT_DELAY = 5000;
+	
+	public static final String CONTROL_PANEL_URL = "http://panel.preyproject.com";
 
 
 	public static final String PREFS_NAME = "PREY_PREFS";
@@ -53,6 +67,7 @@ public class PreyConfig {
 	public static final String PREFS_SMS_RUN = "PREFS_SMS_RUN";
 	public static final String PREFS_SMS_STOP = "PREFS_SMS_STOP";
 	public static final String PREFS_DESTINATION_SMS = "PREFS_DESTINATION_SMS";
+	public static final String PREFS_DESTINATION_SMS_NAME = "PREFS_DESTINATION_SMS_NAME";
 	public static final String PREFS_SHOW_NOTIFICATION = "PREFS_SHOW_NOTIFICATION";
 	public static final String PREFS_CHECK_SIM_CHANGE = "PREFS_CHECK_SIM_CHANGE";
 	public static final String PREFS_RINGTONE = "PREFS_RINGTONE";
@@ -60,6 +75,9 @@ public class PreyConfig {
 	public static final String PREFS_ACCOUNT_VERIFIED = "PREFS_ACCOUNT_VERIFIED";
 	public static final String PREFS_SECURITY_PROMPT_SHOWN = "PREFS_SECURITY_PROMPT_SHOWN";
 	public static final String ACTIVATE_DEVICE_ADMIN = "ACTIVATE_DEVICE_ADMIN";
+	public static final String PREFS_ACTIVATE_WIFI = "PREFS_ACTIVATE_WIFI";
+	public static final String PREFS_ACTIVATE_MOBILE_DATA = "PREFS_ACTIVATE_MOBILE_DATA";
+	public static final String IS_CAMOUFLAGE_SET = "PREFS_CAMOUFLAGE";
 	public static final String UNLOCK_PASS = "UNLOCK_PASS";
 	public static final String IS_LOCK_SET = "IS_LOCK_SET";
 	public static final String LAST_LAT = "LAST_LAT";
@@ -67,32 +85,48 @@ public class PreyConfig {
 	public static final String LAST_ACC = "LAST_ACC";
 	public static final String LAST_ALT = "LAST_ALT";
 	public static final String LAST_LOC_PROVIDER = "LAST_ALT";
+	
+	
+	public static final String IS_REVOKED_PASSWORD = "IS_REVOKED_PASSWORD";
+	public static final String REVOKED_PASSWORD = "REVOKED_PASSWORD";
+	
+ 
+	
+	
+	
 	/* ------------- */
 
 	public static final String TAG = "PREY";
+	private static final String PICTURE_FILENAME = "PICTURE_FILENAME"; 
 
-	
 	private static PreyConfig cachedInstance = null;
 	public static String postUrl = null;
 	private String deviceID = "";
 	private String apiKey = "";
 	private boolean missing;
 	private String email;
-	private String password;
 	private String destinationSms;
 	private boolean shouldNotify;
 	private boolean shouldCheckSimChange;
+	private boolean shouldActivateWifi;
+	private boolean shouldActivateMobileData;
 	private boolean isTheAccountAlreadyVerified;
 	private boolean securityPrivilegesAlreadyPrompted;
+	private boolean isCamouflageSet;
 	private boolean locked;
 	private boolean runOnce;
 	private boolean isFroyoOrAbove;
 	private boolean isCupcake;
+	private boolean isGingerbreadOrAbove;
 	
+	private boolean isRevokedPassword;
+	private String revokedPassword;
+	 
 	private Context ctx;
 
 	private PreyConfig(Context ctx) {
 		this.ctx = ctx;
+		this.isGingerbreadOrAbove = Integer.parseInt(Build.VERSION.SDK) >= 9;
 		this.isFroyoOrAbove = Integer.parseInt(Build.VERSION.SDK) >= 8;
 		this.isCupcake = Integer.parseInt(Build.VERSION.SDK) == 3;
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -103,13 +137,21 @@ public class PreyConfig {
 		//this.smsToRun = settings.getString(PreyConfig.PREFS_SMS_RUN, "GO PREY");
 		//this.smsToStop = settings.getString(PreyConfig.PREFS_SMS_STOP, "STOP PREY");
 		this.destinationSms = settings.getString(PreyConfig.PREFS_DESTINATION_SMS, "");
-		this.missing = new Boolean(settings.getString(PreyConfig.PREFS_IS_MISSING, "false"));
+		this.missing = Boolean.valueOf(settings.getString(PreyConfig.PREFS_IS_MISSING, "false"));
 		this.email = settings.getString(PreyConfig.PREFS_EMAIL, "");
 		this.shouldNotify = settings.getBoolean(PreyConfig.PREFS_SHOW_NOTIFICATION, false);
 		this.shouldCheckSimChange = settings.getBoolean(PreyConfig.PREFS_CHECK_SIM_CHANGE, true);
+		this.shouldActivateWifi = settings.getBoolean(PreyConfig.PREFS_ACTIVATE_WIFI, false);
+		this.shouldActivateMobileData = settings.getBoolean(PreyConfig.PREFS_ACTIVATE_MOBILE_DATA, false);
+		this.isCamouflageSet = settings.getBoolean(PreyConfig.IS_CAMOUFLAGE_SET, false);
 		this.isTheAccountAlreadyVerified = settings.getBoolean(PreyConfig.PREFS_ACCOUNT_VERIFIED, false);
 		this.securityPrivilegesAlreadyPrompted = settings.getBoolean(PreyConfig.PREFS_SECURITY_PROMPT_SHOWN, false);
 		this.locked = settings.getBoolean(PreyConfig.IS_LOCK_SET, false);
+		
+		this.isRevokedPassword=settings.getBoolean(PreyConfig.IS_REVOKED_PASSWORD, false);
+		this.revokedPassword=settings.getString(PreyConfig.REVOKED_PASSWORD, "");
+		
+	//	FroyoSupport.getInstance(ctx).changePasswordAndLock("osito", true);
 	}
 	
 	public void saveAccount(PreyAccountData accountData) {
@@ -119,11 +161,8 @@ public class PreyConfig {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(PreyConfig.PREFS_DEVICE_ID, accountData.getDeviceId());
 		editor.putString(PreyConfig.PREFS_API_KEY, accountData.getApiKey());
-		editor.putString(PreyConfig.PREFS_LOGIN, accountData.getLogin());
-		//editor.putString(PreyConfig.PREFS_PASSWORD, accountData.getPassword());
 		editor.putString(PreyConfig.PREFS_EMAIL, accountData.getEmail());
-		//editor.putString(PreyConfig.PREFS_PREY_VERSION, accountData.getPreyVersion());
-		editor.putString(PreyConfig.PREFS_IS_MISSING, new Boolean(accountData.isMissing()).toString());
+		editor.putString(PreyConfig.PREFS_IS_MISSING, Boolean.valueOf(accountData.isMissing()).toString());
 
 		editor.commit();
 		
@@ -140,20 +179,24 @@ public class PreyConfig {
 	}
 	
 	private static void deleteCacheInstance() {
+		if (cachedInstance != null)
+			
+			cachedInstance.deleteSmsPicture();
 		cachedInstance = null;
 	}
 	
 	SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 		
 		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-			if (key.equals(PREFS_SHOW_NOTIFICATION))
-				shouldNotify = sharedPreferences.getBoolean(PREFS_SHOW_NOTIFICATION, false);
+			//if (key.equals(PREFS_SHOW_NOTIFICATION))
+				//shouldNotify = sharedPreferences.getBoolean(PREFS_SHOW_NOTIFICATION, false);
+			PreyConfig.deleteCacheInstance();
 		}
 	};
 
 
 	public String getDeviceID() {
-		return deviceID;
+		return deviceID; 
 	}
 
 	public void setDeviceID(String deviceID) {
@@ -176,7 +219,7 @@ public class PreyConfig {
 
 	public void setMissing(boolean missing) {
 		this.missing = missing;
-		this.saveString(PreyConfig.PREFS_IS_MISSING, new Boolean(missing).toString());
+		this.saveString(PreyConfig.PREFS_IS_MISSING, Boolean.valueOf(missing).toString());
 	}
 	
 	public void setUnlockPass(String unlockPass) {
@@ -195,6 +238,20 @@ public class PreyConfig {
 		editor.putBoolean(PreyConfig.IS_LOCK_SET, locked);
 		editor.commit();
 	}
+	
+	
+	public void setRevokedPassword(boolean isRevokedPassword,String revokedPassword) {
+		this.isRevokedPassword = isRevokedPassword;
+		this.revokedPassword = revokedPassword;
+		
+		
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean(PreyConfig.IS_REVOKED_PASSWORD, isRevokedPassword);
+		editor.putString(PreyConfig.REVOKED_PASSWORD, revokedPassword);
+		editor.commit();
+	}
+	
 	
 	public void unlockIfLockActionIsntEnabled(ArrayList<PreyAction> actions){
 		
@@ -216,16 +273,10 @@ public class PreyConfig {
 	public boolean isLockSet() {
 		return locked;
 	}
-
-	/*
-	public void setPassword(String password) {
-		this.password = password;
-		this.saveString(PreyConfig.PREFS_PASSWORD, password);
+	
+	public boolean isCamouflageSet() {
+		return isCamouflageSet;
 	}
-
-	public String getPassword() {
-		return password;
-	}*/
 
 	public String getSmsToStop() {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -241,6 +292,14 @@ public class PreyConfig {
 		return shouldNotify;
 	}
 
+	public boolean isShouldActivateMobileData() {
+		return shouldActivateMobileData;
+	}
+	
+	public boolean isShouldActivateWifi() {
+		return shouldActivateWifi;
+	}
+	
 	public boolean isShouldCheckSimChange() {
 		return shouldCheckSimChange;
 	}
@@ -324,18 +383,56 @@ public class PreyConfig {
 		return false;
 	}
 
-	public String getDestinationSms() {
+	public String getDestinationSmsNumber() {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
 		return settings.getString(PreyConfig.PREFS_DESTINATION_SMS, "");
 	}
+	
+	public String getDestinationSmsName() {
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+		return settings.getString(PreyConfig.PREFS_DESTINATION_SMS_NAME, "");
+	}
 
-	public void saveDestinationSms(String destinationSms) {
+	public void saveDestinationSmsNumber(String destinationSms) {
 		this.saveString(PreyConfig.PREFS_DESTINATION_SMS, destinationSms);
 	}
-
-	public boolean isSecurityPrivilegesAlreadyPrompted() {
-		return securityPrivilegesAlreadyPrompted;
+	
+	public void saveDestinationSmsName(String destinationSmsName) {
+		this.saveString(PreyConfig.PREFS_DESTINATION_SMS_NAME, destinationSmsName);
 	}
+	
+	public Bitmap getDestinationSmsPicture(){
+		File sd = Environment.getExternalStorageDirectory();
+		File dest = new File(sd, PICTURE_FILENAME);
+		try {
+			FileInputStream is = new FileInputStream(dest);
+			BufferedInputStream bis = new BufferedInputStream(is);
+			return BitmapFactory.decodeStream(bis);
+		} catch (FileNotFoundException e) {
+			return null;
+		}
+	}
+	
+	public void saveDestinationSmsPicture(Bitmap detinationSmsPicture){
+		File sd = Environment.getExternalStorageDirectory();
+		File dest = new File(sd, PICTURE_FILENAME);
+
+		try {
+		     FileOutputStream out = new FileOutputStream(dest);
+		     detinationSmsPicture.compress(Bitmap.CompressFormat.PNG, 90, out);
+		     out.flush();
+		     out.close();
+		} catch (Exception e) {
+		     e.printStackTrace();
+		}
+	}
+	
+	private void deleteSmsPicture(){
+		File sd = Environment.getExternalStorageDirectory();
+		File dest = new File(sd, PICTURE_FILENAME);
+		dest.delete();
+	}
+	
 
 	public void setSecurityPrivilegesAlreadyPrompted(boolean securityPrivilegesAlreadyPrompted) {
 		this.securityPrivilegesAlreadyPrompted = securityPrivilegesAlreadyPrompted;
@@ -348,7 +445,7 @@ public class PreyConfig {
 	public void registerC2dm(){
 		Intent registrationIntent = new Intent("com.google.android.c2dm.intent.REGISTER");
 		registrationIntent.putExtra("app", PendingIntent.getBroadcast(this.ctx, 0, new Intent(), 0)); // boilerplate
-		registrationIntent.putExtra("sender", FileConfigReader.getInstance(this.ctx).getc2dmMail());
+		registrationIntent.putExtra("sender", FileConfigReader.getInstance(this.ctx).getGcmId());
 		this.ctx.startService(registrationIntent);
 	}
 	
@@ -384,8 +481,12 @@ public class PreyConfig {
 		return isCupcake;
 	}
 
+	public boolean isGingerbreadOrAbove() {
+		return isGingerbreadOrAbove;
+	}
+	
 	public String getPreyVersion() {
-		return FileConfigReader.getInstance(this.ctx).getPreyVersion();
+		return this.ctx.getString(R.string.prey_version);
 	}
 	
 	public String getPreyMinorVersion() {
@@ -408,7 +509,12 @@ public class PreyConfig {
 
 	public String getPreyUrl() {
 		String subdomain = FileConfigReader.getInstance(this.ctx).getPreySubdomain();
-		return "http://".concat(subdomain).concat(".").concat(getPreyDomain()).concat("/");
+		return "https://".concat(subdomain).concat(".").concat(getPreyDomain()).concat("/");
+	}
+	
+	public String getPreyUiUrl() {
+		String uiSubdomain = FileConfigReader.getInstance(this.ctx).getPreyUiSubdomain();
+		return "https://".concat(uiSubdomain).concat(".").concat(getPreyDomain()).concat("/");
 	}
 
 	public boolean askForPassword() {
@@ -420,6 +526,18 @@ public class PreyConfig {
 	public boolean isLogEnabled() {
 		return FileConfigReader.getInstance(this.ctx).isLogEnabled();
 	}
+
+	public boolean isRevokedPassword() {
+		return isRevokedPassword;
+	}
+
+ 
+
+	public String getRevokedPassword() {
+		return revokedPassword;
+	}
+
+ 
 
 	
 

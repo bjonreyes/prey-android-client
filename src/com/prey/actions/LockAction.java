@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -52,7 +52,7 @@ public class LockAction extends PreyAction {
 		PreyConfig preyConfig = PreyConfig.getPreyConfig(ctx);
 		if (preyConfig.isFroyoOrAbove()) {
 			PreyLogger.d("-- Unlock instruction received");
-			FroyoSupport.getInstance(ctx).changePasswordAndLock("",false);
+			FroyoSupport.getInstance(ctx).changePasswordAndLock("",true);
 		}
 //		if (PreyConfig.getPreyConfig(ctx).showLockScreen()){
 //			PreyLogger.d("Instruction to kill Lock module received");
@@ -65,6 +65,10 @@ public class LockAction extends PreyAction {
 //		}
 		
 		
+	}
+	
+	public int getPriority(){
+		return LOCK_PRIORITY;
 	}
 
 }

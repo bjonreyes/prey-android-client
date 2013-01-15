@@ -1,20 +1,17 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
 package com.prey.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-
 import com.prey.R;
-
-public class PopUpAlertActivity extends Activity {
+public class PopUpAlertActivity extends PreyActivity {
 
 	private static final int SHOW_POPUP = 0;
 	private String message = null;

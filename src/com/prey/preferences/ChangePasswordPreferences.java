@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -19,10 +19,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.prey.PreyConfig;
-import com.prey.PreyException;
-import com.prey.R;
+import com.prey.exceptions.PreyException;
 import com.prey.net.PreyWebServices;
-
+import com.prey.R;
 public class ChangePasswordPreferences extends DialogPreference {
 
 	View changePassword = null;

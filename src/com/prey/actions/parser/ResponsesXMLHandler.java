@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -22,6 +22,9 @@ public class ResponsesXMLHandler extends DefaultHandler {
 	private boolean inModule;
 	private boolean inAlertMessage;
 	private boolean inUnlockPass;
+	private boolean inWebCamMessage;
+	private String alertMessage = "";
+	private String webCamMessage = "";
 
 	private ReportActionResponse actionResponse = new ReportActionResponse();
 
@@ -77,6 +80,8 @@ public class ResponsesXMLHandler extends DefaultHandler {
 				inAlertMessage = true;
 			} else if (localName.equals("unlock_pass")) {
 				inUnlockPass = true;
+			} else if (localName.equals("webcam_message")){
+				inWebCamMessage = true;
 			}
 		}
 	}
@@ -98,8 +103,12 @@ public class ResponsesXMLHandler extends DefaultHandler {
 			this.inModule = false;
 		} else if (localName.equals("alert_message")) {
 			this.inAlertMessage = false;
+			this.alertMessage = "";
 		} else if (localName.equals("unlock_pass")) {
 			this.inUnlockPass = false;
+		} else if (localName.equals("webcam_message")) {
+			this.inWebCamMessage = false;
+			this.webCamMessage = "";
 		}
 	}
 
@@ -108,24 +117,27 @@ public class ResponsesXMLHandler extends DefaultHandler {
 	 */
 	@Override
 	public void characters(char ch[], int start, int length) {
-
+		
 		if (this.inMissing) {
 			String isMissing = new String(ch, start, length);
-			actionResponse.setMissing(new Boolean(isMissing));
+			actionResponse.setMissing(Boolean.valueOf(isMissing));
 		} else if (this.inDelay) {
 			String delay = new String(ch, start, length);
-			actionResponse.setDelay(new Long(delay));
+			actionResponse.setDelay(Long.valueOf(delay));
 		} else if (this.inPostUrl) {
 			String postUrl = new String(ch, start, length);
 			PreyConfig.postUrl = postUrl;
 		} else if (this.inAlertMessage) {
 			// alert_message
 			// change_wallpaper
-			String alertMessage = new String(ch, start, length);
+			alertMessage = alertMessage.concat(new String(ch, start, length));
 			actionResponse.addActionConfigParameter("alert", "alert_message", alertMessage);
 		} else if (this.inUnlockPass) {
 			String unlockPass = new String(ch, start, length);
 			actionResponse.addActionConfigParameter("lock", "unlock_pass", unlockPass);
+		} else if (this.inWebCamMessage){
+			webCamMessage = webCamMessage.concat(new String(ch, start, length));
+			actionResponse.addActionConfigParameter("webcam", "webcam_message", webCamMessage);
 		}
 
 	}

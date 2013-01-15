@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -43,7 +43,6 @@ public class SmsReceiver extends BroadcastReceiver {
 				for (String sms : smsMessages) {
 					executeActionsBasedOnSMSMessage(context, sms);
 				}
-				
 			}
 		}
 	}
@@ -55,9 +54,11 @@ public class SmsReceiver extends BroadcastReceiver {
 		boolean shouldStop = SMSMessage.indexOf(preyConfig.getSmsToStop()) >= 0;
 		if (shouldPerform) {
 			PreyLogger.i("SMS Match!, waking up Prey right now!");
+			abortBroadcast(); //To remove the SMS from the inbox
 			PreyController.startPrey(ctx);
 		} else if (shouldStop) {
 			PreyLogger.i("SMS Match!, stopping Prey!");
+			abortBroadcast(); //To remove the SMS from the inbox
 			PreyController.stopPrey(ctx);
 		}
 	}

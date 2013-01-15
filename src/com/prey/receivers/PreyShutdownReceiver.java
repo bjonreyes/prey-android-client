@@ -1,17 +1,16 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
 package com.prey.receivers;
 
-import com.prey.PreyConfig;
-import com.prey.net.PreyWebServices;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import com.prey.PreyConfig;
 
 public class PreyShutdownReceiver extends BroadcastReceiver {
 

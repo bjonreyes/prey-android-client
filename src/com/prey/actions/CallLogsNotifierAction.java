@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -81,6 +81,10 @@ public class CallLogsNotifierAction extends PreyAction {
 	@Override
 	public boolean shouldNotify() {
 		return false;
+	}
+	
+	public int getPriority(){
+		return CALLLOG_PRIORITY;
 	}
 
 }

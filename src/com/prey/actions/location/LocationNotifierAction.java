@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -12,14 +12,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 
-import com.prey.PreyConfig;
-import com.prey.PreyException;
 import com.prey.PreyLogger;
 import com.prey.R;
 import com.prey.actions.HttpDataService;
 import com.prey.actions.PreyAction;
 import com.prey.actions.observer.ActionJob;
 import com.prey.actions.observer.ActionResult;
+import com.prey.exceptions.PreyException;
 import com.prey.services.LocationService;
 
 public class LocationNotifierAction extends PreyAction {
@@ -76,7 +75,7 @@ public class LocationNotifierAction extends PreyAction {
 		HashMap<String, String> parameters = new HashMap<String, String>(); // HashMap<String,
 		// String>();
 		while (!validLocation) {
-			lastLocation = PreyLocationManager.getInstance().getLastLocation();
+			lastLocation = PreyLocationManager.getInstance(ctx).getLastLocation();
 			if (lastLocation.isValid()) {
 				validLocation = true;
 				parameters.put("lat", Double.toString(lastLocation.getLat()));
@@ -103,6 +102,10 @@ public class LocationNotifierAction extends PreyAction {
 	@Override
 	public boolean isSyncAction() {
 		return true;
+	}
+	
+	public int getPriority(){
+		return GEO_PRIORITY;
 	}
 
 }

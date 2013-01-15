@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 
+import com.prey.exceptions.SMSNotSendException;
+
 public class SMSSupport {
 	
 	public static ArrayList<String> getSMSMessage(Object[] pdus){
@@ -20,7 +22,7 @@ public class SMSSupport {
 		for (int i = 0; i < msgs.length; i++) {
 			msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
 			// str += "SMS from " + msgs[i].getOriginatingAddress();
-			// str += " :";
+			// str += " :"; 
 			// str += msgs[i].getMessageBody().toString();
 			// str += "\n";
 			try {
@@ -32,9 +34,13 @@ public class SMSSupport {
 		return smsMessages;
 	}
 
-	public static void sendSMS(String destSMS, String message) {
+	public static void sendSMS(String destSMS, String message) throws SMSNotSendException {
 		SmsManager sm = SmsManager.getDefault();
+		try {
 		sm.sendTextMessage(destSMS, null, message, null, null);
+		} catch (Exception e){
+			throw new SMSNotSendException();			
+		}
 	}
 
 }

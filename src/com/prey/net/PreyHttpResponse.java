@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 
-import com.prey.PreyConfig;
 import com.prey.PreyLogger;
 
 public class PreyHttpResponse {

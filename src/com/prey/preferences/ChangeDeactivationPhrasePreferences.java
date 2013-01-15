@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -13,9 +13,8 @@ import android.preference.EditTextPreference;
 import android.util.AttributeSet;
 
 import com.prey.PreyLogger;
-import com.prey.R;
 import com.prey.net.PreyWebServices;
-
+import com.prey.R;
 public class ChangeDeactivationPhrasePreferences extends EditTextPreference {
 	
 	

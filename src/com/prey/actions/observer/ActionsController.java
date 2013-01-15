@@ -1,17 +1,15 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
 package com.prey.actions.observer;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import android.content.Context;
 
-import com.prey.PreyConfig;
 import com.prey.PreyLogger;
 import com.prey.actions.HttpDataService;
 import com.prey.actions.PreyAction;

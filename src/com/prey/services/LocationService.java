@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Created by Carlos Yaconi.
- * Copyright 2011 Fork Ltd. All rights reserved.
+ * Created by Carlos Yaconi
+ * Copyright 2012 Fork Ltd. All rights reserved.
  * License: GPLv3
  * Full license at "/LICENSE"
  ******************************************************************************/
@@ -21,9 +21,10 @@ import com.prey.PreyConfig;
 import com.prey.PreyLogger;
 import com.prey.actions.location.PreyLocation;
 import com.prey.actions.location.PreyLocationManager;
+import com.prey.net.NetworkUtils;
 
 /**
- * This service is intented to be running while Prey is activated. While
+ * This service is intented to be running while Prey is active. While
  * running, it will be updating the last location available in PreyConfig
  * persitent storage
  * 
@@ -59,6 +60,10 @@ public class LocationService extends Service {
 		// If not missing, this service running will only drain battery
 		PreyLogger.d("Checking if this device is missing");
 		if (preyConfig.isMissing()) {
+			
+			if (!NetworkUtils.getNetworkUtils(getApplicationContext()).isWifiEnabled() && preyConfig.isShouldActivateWifi())
+				NetworkUtils.getNetworkUtils(getApplicationContext()).turnOnWifi(true);
+			
 			androidLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 			LocationProvider gpsLocationProvider = androidLocationManager.getProvider(LocationManager.GPS_PROVIDER);
 			LocationProvider networkProvider = androidLocationManager.getProvider(LocationManager.NETWORK_PROVIDER);
@@ -133,7 +138,7 @@ public class LocationService extends Service {
 				lastRegisteredLocation = newLocation;
 			}
 		}
-		PreyLocationManager.getInstance().setLastLocation(new PreyLocation(lastRegisteredLocation));
+		PreyLocationManager.getInstance(getApplicationContext()).setLastLocation(new PreyLocation(lastRegisteredLocation));
 		/* ** I'll keep both provider competing for the more accurate fix ****
 		 * 
 		if (newLocation.getProvider().equals(LocationManager.GPS_PROVIDER)) {
