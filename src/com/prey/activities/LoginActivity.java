@@ -7,6 +7,7 @@
 package com.prey.activities;
 
 import android.app.NotificationManager;
+
 import com.prey.R;
 import android.content.Context;
 import android.content.Intent;
@@ -17,9 +18,12 @@ import android.view.View;
 import android.widget.Button;
 
 import com.prey.PreyConfig;
+ 
 
 public class LoginActivity extends PasswordActivity {
 
+	
+	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// ignore orientation change
@@ -43,7 +47,13 @@ public class LoginActivity extends PasswordActivity {
 
 	private void startup() {
 		if (!isThisDeviceAlreadyRegisteredWithPrey()) {
-			Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
+			Intent intent =null;
+			if (!isThereBatchInstallationKey()){
+				intent = new Intent(LoginActivity.this, WelcomeActivity.class);
+				
+			}else{
+				intent = new Intent(LoginActivity.this, WelcomeBatchActivity.class);
+			}
 			startActivity(intent);
 			finish();
 		} else if (!getPreyConfig().isCamouflageSet())
@@ -74,7 +84,6 @@ public class LoginActivity extends PasswordActivity {
 	}
 
 	private void showCamouflage() {
-
 		setContentView(R.layout.camouflage);
 		bindPasswordControls();
 	}
@@ -83,6 +92,10 @@ public class LoginActivity extends PasswordActivity {
 		return getPreyConfig().isThisDeviceAlreadyRegisteredWithPrey(false);
 	}
 
+	private boolean isThereBatchInstallationKey() {
+		String apiKeyBatch=getPreyConfig().getApiKeyBatch();
+		return (apiKeyBatch!=null&&!"".equals(apiKeyBatch));
+	}
 	
-
+	
 }
