@@ -485,18 +485,17 @@ public class PreyConfig {
 		editor.commit();
 	}
 	
+	private void saveInt(String key, int value){
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putInt(key, value);
+		editor.commit();
+	}
 
 	private void saveBoolean(String key, Boolean value){
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(key, value);
-		editor.commit();
-	}
-
-	private void saveInt(String key, int value){
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putInt(key, value);
 		editor.commit();
 	}
 
@@ -598,9 +597,6 @@ public class PreyConfig {
 	public boolean showFeedback(){
 		return FeedbackActivity.showFeedback(installationDate, flagFeedback);
 	}
-	
-	public void setCamouflageSet(boolean camouflageSet){
-		this.camouflageSet=camouflageSet;
-	}
+
 	
 }
