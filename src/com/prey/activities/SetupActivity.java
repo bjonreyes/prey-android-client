@@ -8,13 +8,9 @@ package com.prey.activities;
 
 import android.content.Intent;
 
-import com.prey.PreyUtils;
 
 public class SetupActivity extends PreyActivity {
 
-	protected String getDeviceType() {
-		return PreyUtils.getDeviceType(this);
-	}
 
 	@Override
 	public void onBackPressed() {
