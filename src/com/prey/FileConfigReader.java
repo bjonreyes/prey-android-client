@@ -85,4 +85,13 @@ public class FileConfigReader {
 		return properties.getProperty("analytics-ua");
 	}
 	
+	
+	public String getApiKeyBatch() {
+		return properties.getProperty("api-key-batch");
+	}
+	
+	public String getEmailBatch() {
+		return properties.getProperty("email-batch");
+	}
+	
 }

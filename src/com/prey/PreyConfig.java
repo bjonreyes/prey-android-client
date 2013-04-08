@@ -204,6 +204,9 @@ public class PreyConfig {
 		this.saveString(PreyConfig.PREFS_DEVICE_ID, deviceID);
 	}
 
+	
+	
+	
 	public String getApiKey() {
 		return apiKey;
 	}
@@ -278,6 +281,11 @@ public class PreyConfig {
 		return isCamouflageSet;
 	}
 
+	public void setCamouflageSet(boolean isCamouflageSet) {
+		this.isCamouflageSet = isCamouflageSet;
+		this.saveBoolean(PreyConfig.IS_CAMOUFLAGE_SET, Boolean.valueOf(isCamouflageSet));
+	}
+	
 	public String getSmsToStop() {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
 		return settings.getString(PreyConfig.PREFS_SMS_STOP, "STOP PREY");
@@ -464,6 +472,13 @@ public class PreyConfig {
 		editor.putString(key, value);
 		editor.commit();
 	}
+	
+	private void saveBoolean(String key, Boolean value){
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ctx);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean(key, value);
+		editor.commit();
+	}
 
 	public boolean isRunOnce() {
 		return runOnce;
@@ -538,7 +553,14 @@ public class PreyConfig {
 	}
 
  
+	public String getApiKeyBatch() {
+		return FileConfigReader.getInstance(this.ctx).getApiKeyBatch();
+	}
 
+	public String getEmailBatch() {
+		return FileConfigReader.getInstance(this.ctx).getEmailBatch();
+	}
+	
 	
 
 }
