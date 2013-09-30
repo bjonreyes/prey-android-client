@@ -97,4 +97,8 @@ public class FileConfigReader {
 		return properties.getProperty("email-feedback");
 	}
 	
+	public String getSubjectFeedback(){
+		return properties.getProperty("subject-feedback");
+	}
+	 
 }
