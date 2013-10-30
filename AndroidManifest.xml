@@ -122,8 +122,7 @@
             android:clearTaskOnLaunch="true"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/preyForAndroid_name"
-            android:launchMode="singleTask" />
-        
+            android:launchMode="singleTask" />        
         <activity
             android:name="com.prey.activities.FormFeedbackActivity"
             android:clearTaskOnLaunch="true"
@@ -160,13 +159,11 @@
             android:name="com.prey.activities.PermissionInformationActivity"
             android:configChanges="keyboardHidden" />
         <activity
+            android:name="com.prey.activities.PermissionInformationBatchActivity"
+            android:configChanges="keyboardHidden" />
+        <activity
             android:name="com.prey.activities.AddDeviceToAccountActivity"
             android:configChanges="keyboardHidden" />
-        <!--
-        <activity
-            android:name="com.prey.activities.SMSContactActivity"
-            android:configChanges="keyboardHidden" />
-        -->
         <activity
             android:name="com.prey.activities.StatusActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -181,6 +178,17 @@
             android:name="com.prey.activities.AgreementDialogActivity"
             android:configChanges="orientation|keyboardHidden" />
 
+        
+        <intent-filter>
+            <action android:name="com.prey.activities.WelcomeBatchActivity" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+        
+        <intent-filter>
+            <action android:name="com.prey.activities.PermissionInformationBatchActivity" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+         
         <!-- Services -->
         <service android:name="com.prey.services.LocationService" />
         <service android:name="com.prey.services.PreyBootService" />

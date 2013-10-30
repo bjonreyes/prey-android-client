@@ -73,7 +73,7 @@ public class WelcomeBatchActivity extends PreyActivity {
 			            "", // Label
 			            1);
 				PreyConfig.getPreyConfig(WelcomeBatchActivity.this).setCamouflageSet(true);
-				Intent intent = new Intent(WelcomeBatchActivity.this, CongratulationsActivity.class);
+				Intent intent = new Intent(WelcomeBatchActivity.this, PermissionInformationBatchActivity.class);
 				intent.putExtras(bundle);
 				startActivity(intent);
 				finish();

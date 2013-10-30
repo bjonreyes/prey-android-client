@@ -21,6 +21,7 @@ import com.prey.actions.HttpDataService;
 import com.prey.actions.PreyAction;
 import com.prey.actions.observer.ActionJob;
 import com.prey.actions.observer.ActionResult;
+import com.prey.actions.picture.PictureUtil;
 import com.prey.activities.SimpleCameraActivity;
 import com.prey.exceptions.PreyException;
 import com.prey.net.http.EntityFile;
@@ -45,52 +46,9 @@ public class CameraAction extends PreyAction {
 	public void execute(ActionJob actionJob2, Context ctx) throws PreyException {
 		try {
 			actionJob = actionJob2;
-			AudioManager mgr = null;
-			int streamType = AudioManager.STREAM_SYSTEM;
+	 
 
-			Intent intent = new Intent(ctx, SimpleCameraActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			ctx.startActivity(intent);
-
-			int i = 0;
-
-			mgr = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-			mgr.setStreamSolo(streamType, true);
-			mgr.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-			mgr.setStreamMute(streamType, true);
-
-			while (SimpleCameraActivity.activity == null && i < 10) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
-				PreyLogger.i("esperando antes take [" + i + "]");
-				i++;
-			}
-
-			SimpleCameraActivity.activity.takePicture();
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-			}
-
-			mgr.setStreamSolo(streamType, false);
-			mgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-			mgr.setStreamMute(streamType, false);
-
-			try {
-				i = 0;
-				while (SimpleCameraActivity.activity != null && SimpleCameraActivity.dataImagen == null && i < 20) {
-					Thread.sleep(1000);
-					i++;
-					PreyLogger.i("falta imagen[" + i + "]");
-				}
-			} catch (InterruptedException e) {
-				PreyLogger.d("Error, causa:" + e.getMessage());
-			}
-			SimpleCameraActivity.activity.finish();
-
-			HttpDataService data = null;
+			HttpDataService data= PictureUtil.getPicture(ctx);
 			if (SimpleCameraActivity.dataImagen != null) {
 				PreyLogger.d("dataImagen data length=" + SimpleCameraActivity.dataImagen.length);
 				InputStream file = new ByteArrayInputStream(SimpleCameraActivity.dataImagen);
